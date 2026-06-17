@@ -24,11 +24,19 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProducts()
+    public async Task<IActionResult> GetProducts([FromQuery] ProductQueryParameters query)
     {
-        var products = await _productService.GetAllProductsAsync();
-        
-        return Ok(products);
+        var (data, totalCount) = await _productService.GetAllProductsAsync(query); 
+
+        var response = new
+        {
+            data,
+            totalCount,
+            query.Page,
+            query.PageSize
+        };
+
+        return Ok(response);
     }
 
     
