@@ -1,6 +1,7 @@
 using AutoMapper;
 using ECommerce.Api.Data;
 using ECommerce.Api.DTOs;
+using ECommerce.Api.Models;
 using ECommerce.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,14 +17,27 @@ public class ProductService : IProductService
         _context = context;
         _mapper = mapper;
     }
-    public Task<ProductDto> CreateProductAsync(CreateProductDto dto)
+    public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
     {
-        throw new NotImplementedException();
+        var product = _mapper.Map<Product>(dto);
+
+        await _context.Products.AddAsync(product);
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<ProductDto>(product);
     }
 
-    public Task<bool> DeleteProductAsync(int id)
+    public async Task<bool> DeleteProductAsync(int id)
     {
-        throw new NotImplementedException();
+        var product = await _context.Products.FindAsync(id);
+
+        if (product == null)
+            return false;
+
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
@@ -43,8 +57,17 @@ public class ProductService : IProductService
         return _mapper.Map<ProductDto>(product);
     }
 
-    public Task<ProductDto?> UpdateProductAsync(int id, CreateProductDto dto)
+    public async Task<ProductDto?> UpdateProductAsync(int id, CreateProductDto dto)
     {
-        throw new NotImplementedException();
+        var product = await _context.Products.FindAsync(id);
+
+        if (product == null)
+            return null;
+
+        _mapper.Map(dto, product);
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<ProductDto>(product);
+
     }
 }
