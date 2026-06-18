@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj": {}
+    "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj": {}
   },
   "projects": {
-    "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj": {
+    "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
+        "projectUniqueName": "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
         "projectName": "ECommerce.Api",
-        "projectPath": "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
+        "projectPath": "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
         "packagesPath": "C:\\Users\\macak\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\obj\\",
+        "outputPath": "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -56,6 +56,10 @@
               "target": "Package",
               "version": "[16.1.1, )"
             },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.2.0, )"
+            },
             "FluentValidation": {
               "target": "Package",
               "version": "[12.1.1, )"
@@ -63,6 +67,10 @@
             "FluentValidation.DependencyInjectionExtensions": {
               "target": "Package",
               "version": "[12.1.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[10.0.9, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",

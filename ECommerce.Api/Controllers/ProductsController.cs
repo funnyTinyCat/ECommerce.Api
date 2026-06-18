@@ -4,6 +4,7 @@ using ECommerce.Api.DTOs;
 using ECommerce.Api.Models;
 using ECommerce.Api.Services.Interfaces;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateProduct(CreateProductDto dto)
     {   
@@ -66,6 +68,7 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetProductById), new {id = result.Id}, result);
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(int id, CreateProductDto dto)
     {
@@ -77,6 +80,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {

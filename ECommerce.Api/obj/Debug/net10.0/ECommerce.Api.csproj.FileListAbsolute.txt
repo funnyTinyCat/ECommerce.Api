@@ -161,3 +161,5 @@ c:\Users\macak\ECommerce.API\ECommerce.Api\bin\Debug\net10.0\FluentValidation.dl
 c:\Users\macak\ECommerce.API\ECommerce.Api\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
 c:\Users\macak\ECommerce.API\ECommerce.Api\bin\Debug\net10.0\AutoMapper.dll
 c:\Users\macak\ECommerce.API\ECommerce.Api\obj\Debug\net10.0\ECommerce.Api.sourcelink.json
+C:\Users\macak\ECommerce.API\ECommerce.Api\bin\Debug\net10.0\BCrypt-Net-Next.dll
+C:\Users\macak\ECommerce.API\ECommerce.Api\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
