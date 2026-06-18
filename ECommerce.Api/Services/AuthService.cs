@@ -93,7 +93,7 @@ public class AuthService : IAuthService
             FullName = dto.FullName,
             Email = dto.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Role = "User"
+            Role = "User" 
         };
 
         _context.Users.Add(user);

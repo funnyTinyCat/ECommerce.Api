@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "wXhX6H6pfDI=",
+  "dgSpecHash": "oa6Je0+ePQw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
+  "projectFilePath": "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\macak\\.nuget\\packages\\automapper\\16.1.1\\automapper.16.1.1.nupkg.sha512",
     "C:\\Users\\macak\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",

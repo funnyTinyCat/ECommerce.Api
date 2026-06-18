@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj": {}
+    "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj": {
+    "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
+        "projectUniqueName": "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
         "projectName": "ECommerce.Api",
-        "projectPath": "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
+        "projectPath": "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\ECommerce.Api.csproj",
         "packagesPath": "C:\\Users\\macak\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\obj\\",
+        "outputPath": "c:\\Users\\macak\\ECommerce.API\\ECommerce.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
