@@ -5,6 +5,10 @@ using ECommerce.Api.Models;
 using ECommerce.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json;
+using Microsoft.Extensions.Caching.Distributed;
+
 
 namespace ECommerce.Api.Services;
 
@@ -12,18 +16,31 @@ public class ProductService : IProductService
 {
     private readonly AppDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ILogger<ProductService> _logger;
+    private readonly IDistributedCache _cache;
 
-    public ProductService(AppDbContext context, IMapper mapper)
+    private const string ProductsCacheKey = "products:list";
+    private const string ProductByIdCacheKeyPrefix = "products:id";
+
+    public ProductService(AppDbContext context, IMapper mapper, ILogger<ProductService> logger,
+        IDistributedCache cache)
     {
         _context = context;
         _mapper = mapper;
+        _logger = logger;
+        _cache = cache;
     }
     public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
     {
+        _logger.LogInformation("Create product with name: {ProductName}", dto.Name);
+
         var product = _mapper.Map<Product>(dto);
 
         await _context.Products.AddAsync(product);
         await _context.SaveChangesAsync();
+
+        RemoveProductCaches();
+        _logger.LogInformation("Product created successfully with ID: {ProductId}", product.Id);
 
         return _mapper.Map<ProductDto>(product);
     }
@@ -33,10 +50,17 @@ public class ProductService : IProductService
         var product = await _context.Products.FindAsync(id);
 
         if (product == null)
-            return false;
+        {
+            _logger.LogWarning("Product delete failed. Product with Id {ProductId} was not found.", 
+                id);
+
+            return false;   
+        }
 
         _context.Products.Remove(product);
+
         await _context.SaveChangesAsync();
+        await _cache.RemoveAsync($"product{id}");
 
         return true;
     }
@@ -44,6 +68,22 @@ public class ProductService : IProductService
     public async Task<(IEnumerable<ProductDto> Data, int TotalCount)> GetAllProductsAsync(
         ProductQueryParameters query)
     {
+        var cacheKey = $"{ProductsCacheKey}:page={query.Page}:size={query.PageSize}:search={query.Search}:min={query.MinPrice}:max={query.MaxPrice}:sort={query.SortBy}:desc={query.Descending}";
+
+        var cachedData = await _cache.GetStringAsync(cacheKey);
+
+        if (cachedData != null)
+        {
+            _logger.LogInformation("Products list loaded from Redis cache. key : {cacheKey}", cacheKey);
+
+            var cachedResult = JsonSerializer.Deserialize<ProductListResponse>(cachedData);
+
+            return (cachedResult!.Data, cachedResult.TotalCount);
+        }
+
+        _logger.LogInformation("Products list not found in Redis cache. Loading from " +
+            " database.Key :{cacheKey} ", cacheKey);
+
         var productsQuery = _context.Products.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query.Search))
@@ -81,19 +121,69 @@ public class ProductService : IProductService
             .Take(query.PageSize)
             .ToListAsync();
 
+        _logger.LogInformation("Retrieving products with pagination.");
+
         var data = _mapper.Map<IEnumerable<ProductDto>>(products);
 
-        return (data, totalCount);
+        // var result = (data, totalCount);
+        // var serialized = JsonSerializer.Serialize(result);
+
+        var response = new ProductListResponse
+        {
+            Data = data,
+            TotalCount = totalCount
+        };
+
+        var serialized = JsonSerializer.Serialize(response);
+
+        await _cache.SetStringAsync(
+            cacheKey,
+            serialized,
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(3)
+            }
+        );
+
+        _logger.LogInformation($"Products saved to Redis cache.key : {cacheKey}", cacheKey);
+
+        return (result.data, result.totalCount);
     }
 
     public async Task<ProductDto?> GetProductByIdAsync(int id)
     {
+        var cacheKey = $"product:{id}";
+
+        var cachedData = await _cache.GetStringAsync(cacheKey); 
+
+        if (cachedData != null)
+        {
+            _logger.LogInformation("Product with Id {ProductId} loaded from Redis cache", id);
+            return JsonSerializer.Deserialize<ProductDto>(cachedData);
+        }
+
+        _logger.LogInformation("Product with Id {ProductId} not found in Redis cache. " +
+            " Loading from database.", id);
+
         var product = await _context.Products.FindAsync(id);
 
         if (product == null)
             return null;
 
-        return _mapper.Map<ProductDto>(product);
+        var result = _mapper.Map<ProductDto>(product);
+        var serialized = JsonSerializer.Serialize(result);
+
+        await _cache.SetStringAsync(
+            cacheKey,
+            serialized,
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                           
+            }
+        );
+
+        return result;
     }
 
     public async Task<ProductDto?> UpdateProductAsync(int id, CreateProductDto dto)
@@ -101,12 +191,29 @@ public class ProductService : IProductService
         var product = await _context.Products.FindAsync(id);
 
         if (product == null)
-            return null;
+        {
+            _logger.LogWarning("Product update failed. Product with Id {ProductId} was not found.", 
+                id);
 
+            return null;
+        }
+            
         _mapper.Map(dto, product);
         await _context.SaveChangesAsync();
+        await _cache.RemoveAsync($"product{id}");
 
         return _mapper.Map<ProductDto>(product);
+    }
 
+    // private methods
+
+    private void RemoveProductCaches(int? productId = null)
+    {
+        if (productId.HasValue)
+        {
+            _cache.Remove($"{ProductByIdCacheKeyPrefix}{productId.Value}");
+        }
+
+        _logger.LogInformation($"Product cache invalidated  :{productId}");
     }
 }

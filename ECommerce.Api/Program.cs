@@ -9,9 +9,20 @@ using ECommerce.Api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: "Logs/log.txt",
+        rollingInterval: RollingInterval.Day
+    )
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -28,6 +39,16 @@ builder.Services.AddAutoMapper(cfg =>
 });
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddMemoryCache();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:5204";
+    options.InstanceName = "EcommerceApi:";
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -52,6 +73,10 @@ builder.Services.AddAuthentication(options =>
     });
 
 var app = builder.Build();
+
+
+
+app.UseSerilogRequestLogging();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
